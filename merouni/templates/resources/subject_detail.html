@@ -1,0 +1,137 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ subject.name }} - CSIT Resources{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'semester_detail' subject.semester.number %}">{{ subject.semester.name }}</a></li>
+            <li class="breadcrumb-item active">{{ subject.name }}</li>
+        </ol>
+    </nav>
+    
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex align-items-center mb-3">
+                <span class="badge bg-primary me-3" style="font-size: 1.2rem;">{{ subject.code }}</span>
+                <div>
+                    <h1 class="fw-bold mb-1">{{ subject.name }}</h1>
+                    <p class="text-muted mb-0">{{ subject.semester.name }} • {{ page_obj.paginator.count }} resources</p>
+                </div>
+            </div>
+            {% if subject.description %}
+            <p class="lead">{{ subject.description }}</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">Filter Resources</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{% url 'subject_detail' subject.id %}" 
+                           class="btn btn-sm {% if not current_type %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                            All Resources
+                        </a>
+                        {% for resource_type in resource_types %}
+                        <a href="{% url 'subject_detail' subject.id %}?type={{ resource_type.name }}" 
+                           class="btn btn-sm {% if current_type == resource_type.name %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                            {{ resource_type.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Resources Grid -->
+    {% if page_obj %}
+    <div class="row g-4">
+        {% for resource in page_obj %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-secondary">{{ resource.resource_type.name }}</span>
+                        <small class="text-muted">{{ resource.uploaded_at|date:"M d, Y" }}</small>
+                    </div>
+                    <h6 class="card-title">{{ resource.title }}</h6>
+                    {% if resource.description %}
+                    <p class="card-text text-muted small">{{ resource.description|truncatewords:15 }}</p>
+                    {% endif %}
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <small class="text-muted">
+                            <i class="bi bi-download me-1"></i>{{ resource.download_count }} downloads
+                        </small>
+                        <small class="text-muted">
+                            <i class="bi bi-person me-1"></i>{{ resource.uploaded_by.username }}
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'resource_detail' resource.pk %}" class="btn btn-outline-primary btn-sm flex-fill">
+                            <i class="bi bi-eye me-1"></i>View
+                        </a>
+                        <a href="{% url 'download_resource' resource.pk %}" class="btn btn-primary btn-sm flex-fill">
+                            <i class="bi bi-download me-1"></i>Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Resources pagination" class="mt-5">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if current_type %}&type={{ current_type }}{% endif %}">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_type %}&type={{ current_type }}{% endif %}">Previous</a>
+                </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            </li>
+            
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_type %}&type={{ current_type }}{% endif %}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if current_type %}&type={{ current_type }}{% endif %}">Last</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-file-earmark-x display-1 text-muted mb-3"></i>
+        <h3 class="text-muted">No resources found</h3>
+        {% if current_type %}
+        <p class="text-muted">No {{ current_type|lower }} available for this subject.</p>
+        <a href="{% url 'subject_detail' subject.id %}" class="btn btn-primary">View All Resources</a>
+        {% else %}
+        <p class="text-muted">Resources for this subject will be added soon.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
