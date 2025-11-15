@@ -4,7 +4,9 @@ from django.urls import reverse
 from django.utils import timezone, translation
 
 class Semester(models.Model):
-    number = models.IntegerField(unique=True)
+    number = models.IntegerField(unique=True,
+                                 choices=[(i, f"Semester {i}") for i in range(1, 9)]
+                                 )
     name = models.CharField(max_length=50)
     description = models.TextField(blank=True)
     
