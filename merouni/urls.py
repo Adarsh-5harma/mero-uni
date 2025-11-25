@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 
 # Url path of the projects
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('meroboss/', admin.site.urls),
     path('', include('resources.urls')),
     
 ]

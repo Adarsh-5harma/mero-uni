@@ -12,6 +12,16 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+# import environ package
+from environ import Env
+# initialize environ to create object
+env = Env()
+# funtion to to read from environment variables
+# and in .env file we create environment variables
+env.read_env()
+# Set the environment variable for the environment
+# This can be set to 'development', 'staging', or 'production'
+ENVIRONMENT = env('ENVIRONMENT', default='production')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,10 +30,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-01t)55r4)wj3v#3h@-oge7sp39za4de+&a90^1dab#3_p54j9q'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if ENVIRONMENT == 'development':
+    DEBUG = True
+else:
+    DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -38,11 +51,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'resources',
+    # 'admin_honeypot',
   
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -81,7 +96,7 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'adar5h',
         'HOST': 'localhost',
-        'PORT': '3306',
+        'PORT': '3307',
     }
 }
 
@@ -141,3 +156,5 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 
+
+# ACCOUNT_USERNAME_BLACKLIST = ['admin', 'administrator', 'root', 'superuser', 'meroboss', 'staff','account','profile']
