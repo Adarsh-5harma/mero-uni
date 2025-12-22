@@ -4,3 +4,15 @@ static/
 __pycache__/
 .env
 db.mysqlclient
+
+
+# Large files - never commit PDFs, videos, books, etc.
+*.pdf
+*.zip
+*.rar
+*.exe
+*.mp4
+*.mp3
+*.iso
+# Anything over 50MB
+# (GitHub warns at 50MB anyway)
