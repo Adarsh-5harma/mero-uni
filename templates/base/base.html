@@ -343,6 +343,30 @@
                         <i class="bi bi-search"></i>
                     </button>
                 </form>
+                 <!-- Auth Nav -->
+                {% if user.is_authenticated %}
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{% url 'profile' %}" class="btn btn-sm fw-semibold text-white"
+                       style="background:#04314f;border-radius:8px;padding:6px 14px;">
+                        <i class="bi bi-person-circle me-1"></i>{{ user.username }}
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-secondary fw-semibold"
+                       style="border-radius:8px;padding:6px 14px;">
+                        Logout
+                    </a>
+                </div>
+                {% else %}
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{% url 'login' %}" class="btn btn-sm fw-semibold"
+                       style="border:1.5px solid #04314f;color:#04314f;border-radius:8px;padding:6px 14px;">
+                        Login
+                    </a>
+                    <a href="{% url 'signup' %}" class="btn btn-sm text-white fw-semibold"
+                       style="background:#04314f;border-radius:8px;padding:6px 14px;">
+                        Sign Up
+                    </a>
+                </div>
+                {% endif %}
             </div>
         </div>
     </nav>
