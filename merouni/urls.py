@@ -8,6 +8,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('meroboss/', admin.site.urls),
     path('', include('resources.urls')),
+    path('accounts/', include('accounts.urls'))
     
 ]
 

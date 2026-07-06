@@ -38,8 +38,12 @@ INSTALLED_APPS = [
     # 'admin_honeypot',
 
     # Your apps
+    'accounts',
     'resources',
 ]
+
+AUTH_USER_MODEL = 'accounts.User'  # Custom user model
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

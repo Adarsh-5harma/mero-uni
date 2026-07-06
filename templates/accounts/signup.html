@@ -1,0 +1,53 @@
+{% extends "base/base.html" %}
+{% block title %}Sign Up — Mero-Uni{% endblock %}
+{% block content %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center py-5"
+     style="background: linear-gradient(135deg, #04314f 0%, #034770 50%, #185379 100%);">
+  <div class="card border-0 shadow-lg p-4 p-md-5" style="width:100%;max-width:440px;border-radius:16px;">
+    <div class="text-center mb-4">
+      <h4 class="fw-bold" style="color:#04314f;">🎓 Mero-Uni</h4>
+      <p class="text-muted small mb-0">CSAI Resources Platform</p>
+    </div>
+    <ul class="nav nav-pills nav-fill mb-4 border rounded-3 overflow-hidden">
+      <li class="nav-item">
+        <a class="nav-link active rounded-0 fw-semibold" style="background:#04314f;">Sign Up</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link rounded-0 text-secondary fw-semibold" href="{% url 'login' %}">Login</a>
+      </li>
+    </ul>
+    <h5 class="fw-semibold mb-1" style="color:#04314f;">Create your account</h5>
+    <p class="text-muted small mb-4">Join thousands of CSAI students at LTU</p>
+    {% if form.errors %}
+      <div class="alert alert-danger py-2 small">Please fix the errors below.</div>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label fw-semibold small" style="color:#374151;">{{ field.label }}</label>
+          <input type="{{ field.field.widget.input_type }}"
+                 name="{{ field.html_name }}"
+                 class="form-control"
+                 style="border:1.5px solid #d1e3f0;border-radius:8px;background:#f8fbfe;"
+                 placeholder="{{ field.help_text|default:field.label }}"
+                 {% if field.value %}value="{{ field.value }}"{% endif %}>
+          {% if field.errors %}
+            <div class="text-danger small mt-1">{{ field.errors|join:", " }}</div>
+          {% endif %}
+          {% if field.help_text and field.html_name == 'password1' %}
+            <div class="text-muted" style="font-size:0.78rem;margin-top:4px;">{{ field.help_text }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn w-100 text-white fw-semibold py-2 mt-1"
+              style="background:#04314f;border-radius:8px;font-size:0.95rem;">
+        Create account
+      </button>
+    </form>
+    <p class="text-center text-muted small mt-3 mb-0">
+      Already have an account? <a href="{% url 'login' %}" style="color:#185379;font-weight:600;">Login</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

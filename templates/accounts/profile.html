@@ -1,0 +1,33 @@
+{% extends "base/base.html" %}
+{% block title %}Profile — Mero-Uni{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm p-4" style="border-radius:16px;">
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold fs-4"
+               style="width:60px;height:60px;background:#04314f;flex-shrink:0;">
+            {{ user.username|first|upper }}
+          </div>
+          <div>
+            <h5 class="mb-0 fw-bold" style="color:#04314f;">{{ user.username }}</h5>
+            <p class="mb-0 text-muted small">{{ user.email|default:"No email set" }}</p>
+          </div>
+        </div>
+        <hr style="border-color:#d1e3f0;">
+        <div class="mb-2">
+          <span class="text-muted small">Member since</span>
+          <p class="fw-semibold mb-0">{{ user.date_joined|date:"F j, Y" }}</p>
+        </div>
+        <div class="mt-4">
+          <a href="{% url 'logout' %}" class="btn text-white fw-semibold px-4"
+             style="background:#04314f;border-radius:8px;">
+            Logout
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
