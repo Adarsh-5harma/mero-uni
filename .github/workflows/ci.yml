@@ -1,0 +1,38 @@
+name: Django CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      ENVIRONMENT: development
+      DEBUG: "False"
+      SECRET_KEY: ci-only-secret-key-not-for-production
+      DATABASE_URL: sqlite:///ci.sqlite3
+      ALLOWED_HOSTS: localhost,127.0.0.1
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-ai.txt
+      - name: Check for missing migrations
+        run: python manage.py makemigrations --check --dry-run
+      - name: Run Django checks
+        run: python manage.py check --deploy
+      - name: Run tests
+        run: python manage.py test
+      - name: Validate static files
+        run: python manage.py collectstatic --noinput

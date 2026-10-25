@@ -40,7 +40,12 @@ INSTALLED_APPS = [
     # Your apps
     'accounts',
     'resources',
+    'ai_learning',
 ]
+
+GEMINI_API_KEY = env('GEMINI_API_KEY', default='')
+GEMINI_MODEL = env('GEMINI_MODEL', default='gemini-2.5-flash')
+AI_MAX_SOURCE_CHARS = env.int('AI_MAX_SOURCE_CHARS', default=100000)
 
 AUTH_USER_MODEL = 'accounts.User'  # Custom user model
 
@@ -77,10 +82,7 @@ WSGI_APPLICATION = 'merouni.wsgi.application'
 
 # Database
 DATABASES = {
-    'default': env.db(
-        'DATABASE_URL',
-        default='mysql://root:adar5h@localhost:3307/csai_resources'
-    )
+    'default': env.db('DATABASE_URL')
 }
 
 # Password validation
