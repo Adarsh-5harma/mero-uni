@@ -334,6 +334,11 @@
                     <li class="nav-item">
                      <a class="nav-link" href="{% url 'about' %}">About</a>
                     </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'submit_resource' %}"><i class="bi bi-cloud-upload me-1"></i>Submit</a>
+                    </li>
+                    {% endif %}
                 </ul>
                 
                 <!-- Search Form -->
@@ -373,6 +378,11 @@
 
     <!-- Main Content -->
     <main>
+        {% if messages %}
+        <div class="container mt-3">
+          {% for message in messages %}<div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>{% endfor %}
+        </div>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
 

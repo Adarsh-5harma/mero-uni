@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Semester, Subject, ResourceType, Resource
+from .models import Semester, Subject, ResourceType, Resource, Bookmark
 
 @admin.register(Semester)
 class SemesterAdmin(admin.ModelAdmin):
@@ -22,8 +22,8 @@ class ResourceTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Resource)
 class ResourceAdmin(admin.ModelAdmin):
-    list_display = ['title', 'subject', 'resource_type', 'uploaded_by', 'uploaded_at', 'is_active', 'download_count']
-    list_filter = ['resource_type', 'subject__semester', 'subject', 'is_active', 'uploaded_at']
+    list_display = ['title', 'subject', 'resource_type', 'uploaded_by', 'status', 'uploaded_at', 'download_count']
+    list_filter = ['status', 'resource_type', 'subject__semester', 'subject', 'is_active', 'uploaded_at']
     search_fields = ['title', 'description', 'subject__name', 'subject__code']
     readonly_fields = ['uploaded_at', 'updated_at', 'download_count']
     ordering = ['-uploaded_at']
@@ -36,7 +36,7 @@ class ResourceAdmin(admin.ModelAdmin):
             'fields': ('file',)
         }),
         ('Status', {
-            'fields': ('is_active',)
+            'fields': ('status', 'moderation_note', 'is_active')
         }),
         ('Metadata', {
             'fields': ('uploaded_by', 'uploaded_at', 'updated_at', 'download_count'),
@@ -48,4 +48,9 @@ class ResourceAdmin(admin.ModelAdmin):
         if not change:  # If creating new object
             obj.uploaded_by = request.user
         super().save_model(request, obj, form, change)
+
+@admin.register(Bookmark)
+class BookmarkAdmin(admin.ModelAdmin):
+    list_display = ['user', 'resource', 'created_at']
+    search_fields = ['user__username', 'resource__title']
 

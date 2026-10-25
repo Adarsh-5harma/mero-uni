@@ -3,16 +3,21 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator
-from django.http import HttpResponse, Http404
+from django.http import FileResponse, Http404
 from django.conf import settings
 import os
 
 from .models import Semester, Subject, Resource, ResourceType
+from .models import Bookmark
+from .forms import ResourceSubmissionForm
+
+def visible_resources():
+    return Resource.objects.filter(is_active=True, status=Resource.Status.APPROVED)
 
 def home(request):
     """Home page view"""
     semesters = Semester.objects.all().order_by('number')
-    recent_resources = Resource.objects.filter(is_active=True).order_by('-uploaded_at')[:6]
+    recent_resources = visible_resources().order_by('-uploaded_at')[:6]
     resource_types = ResourceType.objects.all()
     context = {
         'semesters': semesters,
@@ -35,7 +40,7 @@ def semester_detail(request, semester_number):
 def subject_detail(request, subject_id):
     """Subject detail page showing resources"""
     subject = get_object_or_404(Subject, id=subject_id)
-    resources = Resource.objects.filter(subject=subject, is_active=True).order_by('-uploaded_at')
+    resources = visible_resources().filter(subject=subject).order_by('-uploaded_at')
     
     # Filter by resource type if specified
     resource_type = request.GET.get('type')
@@ -60,35 +65,36 @@ def subject_detail(request, subject_id):
 
 def resource_detail(request, pk):
     """Resource detail page"""
-    resource = get_object_or_404(Resource, pk=pk, is_active=True)
+    resource = get_object_or_404(visible_resources(), pk=pk)
     
+    is_bookmarked = request.user.is_authenticated and Bookmark.objects.filter(
+        user=request.user, resource=resource
+    ).exists()
+    related_resources = visible_resources().filter(subject=resource.subject).exclude(pk=resource.pk)[:5]
     context = {
         'resource': resource,
+        'is_bookmarked': is_bookmarked,
+        'related_resources': related_resources,
     }
     return render(request, 'resources/resource_detail.html', context)
 
 def download_resource(request, pk):
     """Download resource file"""
-    resource = get_object_or_404(Resource, pk=pk, is_active=True)
-    
-    # Increment download count
-    resource.increment_download_count()
+    resource = get_object_or_404(visible_resources(), pk=pk)
     
     # Get file path
     file_path = resource.file.path
     
     if os.path.exists(file_path):
-        with open(file_path, 'rb') as fh:
-            response = HttpResponse(fh.read(), content_type="application/octet-stream")
-            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
-            return response
+        resource.increment_download_count()
+        return FileResponse(open(file_path, 'rb'), as_attachment=True, filename=os.path.basename(file_path))
     else:
         raise Http404("File not found")
 
 def search_resources(request):
     """Search resources"""
     query = request.GET.get('q', '')
-    resources = Resource.objects.filter(is_active=True)
+    resources = visible_resources()
     
     if query:
         resources = resources.filter(
@@ -127,7 +133,7 @@ def resources_by_type(request, type_slug):
         raise Http404("Resource type not found")
     
     resource_type = get_object_or_404(ResourceType, name=type_name)
-    resources = Resource.objects.filter(resource_type=resource_type, is_active=True).order_by('-uploaded_at')
+    resources = visible_resources().filter(resource_type=resource_type).order_by('-uploaded_at')
     
     # Filter by semester if specified
     semester = request.GET.get('semester')
@@ -152,4 +158,35 @@ def resources_by_type(request, type_slug):
 
 def about(request):
     return render(request, 'resources/about.html')
+
+
+@login_required
+def submit_resource(request):
+    if request.method == 'POST':
+        form = ResourceSubmissionForm(request.POST, request.FILES)
+        if form.is_valid():
+            resource = form.save(commit=False)
+            resource.uploaded_by = request.user
+            resource.status = Resource.Status.PENDING
+            resource.is_active = True
+            resource.save()
+            messages.success(request, 'Resource submitted and sent for review.')
+            return redirect('profile')
+    else:
+        form = ResourceSubmissionForm()
+    return render(request, 'resources/submit_resource.html', {'form': form})
+
+
+@login_required
+def toggle_bookmark(request, pk):
+    if request.method != 'POST':
+        raise Http404
+    resource = get_object_or_404(visible_resources(), pk=pk)
+    bookmark, created = Bookmark.objects.get_or_create(user=request.user, resource=resource)
+    if not created:
+        bookmark.delete()
+        messages.info(request, 'Bookmark removed.')
+    else:
+        messages.success(request, 'Resource bookmarked.')
+    return redirect('resource_detail', pk=pk)
 

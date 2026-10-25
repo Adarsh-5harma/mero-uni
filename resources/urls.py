@@ -10,5 +10,7 @@ urlpatterns = [
     path('search/', views.search_resources, name='search_resources'),
     path('type/<str:type_slug>/', views.resources_by_type, name='resources_by_type'),
     path('about/', views.about, name='about'),
+    path('submit/', views.submit_resource, name='submit_resource'),
+    path('resource/<int:pk>/bookmark/', views.toggle_bookmark, name='toggle_bookmark'),
 ]
 
