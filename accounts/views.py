@@ -32,4 +32,9 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
-    return render(request, 'accounts/profile.html')
+    submissions = request.user.uploaded_resources.select_related('subject', 'resource_type')
+    bookmarks = request.user.bookmarks.select_related('resource', 'resource__subject')
+    return render(request, 'accounts/profile.html', {
+        'submissions': submissions,
+        'bookmarks': bookmarks,
+    })

@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container py-5">
   <div class="row justify-content-center">
-    <div class="col-md-6">
+    <div class="col-lg-9">
       <div class="card border-0 shadow-sm p-4" style="border-radius:16px;">
         <div class="d-flex align-items-center gap-3 mb-4">
           <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold fs-4"
@@ -13,6 +13,7 @@
           <div>
             <h5 class="mb-0 fw-bold" style="color:#04314f;">{{ user.username }}</h5>
             <p class="mb-0 text-muted small">{{ user.email|default:"No email set" }}</p>
+            <span class="badge bg-secondary">{{ user.get_role_display }}</span>
           </div>
         </div>
         <hr style="border-color:#d1e3f0;">
@@ -21,10 +22,27 @@
           <p class="fw-semibold mb-0">{{ user.date_joined|date:"F j, Y" }}</p>
         </div>
         <div class="mt-4">
+          <a href="{% url 'submit_resource' %}" class="btn btn-primary fw-semibold px-4">Submit resource</a>
           <a href="{% url 'logout' %}" class="btn text-white fw-semibold px-4"
              style="background:#04314f;border-radius:8px;">
             Logout
           </a>
+        </div>
+        <hr>
+        <h5>Your submissions</h5>
+        <div class="list-group mb-4">
+          {% for item in submissions %}
+          <div class="list-group-item d-flex justify-content-between">
+            <span>{{ item.title }} <small class="text-muted">({{ item.subject.code }})</small></span>
+            <span class="badge {% if item.status == 'approved' %}bg-success{% elif item.status == 'rejected' %}bg-danger{% else %}bg-warning text-dark{% endif %}">{{ item.get_status_display }}</span>
+          </div>
+          {% empty %}<p class="text-muted">You have not submitted any resources.</p>{% endfor %}
+        </div>
+        <h5>Bookmarks</h5>
+        <div class="list-group">
+          {% for bookmark in bookmarks %}
+          <a class="list-group-item list-group-item-action" href="{% url 'resource_detail' bookmark.resource.pk %}">{{ bookmark.resource.title }} — {{ bookmark.resource.subject.code }}</a>
+          {% empty %}<p class="text-muted">You have no bookmarks yet.</p>{% endfor %}
         </div>
       </div>
     </div>
