@@ -24,3 +24,13 @@ python manage.py runserver
 
 Made with ❤️ by Adarsh Sharma
 AKA Mr_Ikigai
+
+### Development and deployment
+
+Every push to `develop` or `main` runs migration checks, Django security checks,
+tests, and static-file collection through GitHub Actions.
+
+Production deployment happens only after CI succeeds. On the cPanel server, set
+`APP_VENV` to the Python environment created by **Setup Python App**, pull the
+tested `main` branch, and run `bash deploy/deploy_cpanel.sh` from the application
+directory. Keep the production `.env` on the server; never add it to Git.
