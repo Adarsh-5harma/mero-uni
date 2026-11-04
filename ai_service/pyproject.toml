@@ -1,0 +1,23 @@
+[project]
+name = "ai-service"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Adarsh-5harma", email = "adarsh611105@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "google-genai>=2.34.0",
+    "openai>=3.42.1",
+    "pydantic>=2.14.2",
+    "pymupdf>=2.0",
+    "python-dotenv>=1.2.4",
+]
+
+[project.scripts]
+ai-service = "ai_service:main"
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14.0"]
+build-backend = "uv_build"

@@ -23,3 +23,10 @@ db.mysqlclient
 *.log
 .vscode/
 chroma_db/
+
+# AI Service specific
+ai_service/.venv/
+ai_service/__pycache__/
+ai_service/sample.pdf
+
+
