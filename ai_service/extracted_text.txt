@@ -1,0 +1,17 @@
+Praise for AI Engineering
+This book offers a comprehensive, well-structured guide to the
+essential aspects of building generative AI systems. A must-read for
+any professional looking to scale AI across the enterprise.
+—Vittorio Cretella, former global CIO, P&G and Mars
+Chip Huyen gets generative AI. On top of that, she is a remarkable
+teacher and writer whose work has been instrumental in helping
+teams bring AI into production. Drawing on her deep expertise, AI
+Engineering serves as a comprehensive and holistic guide,
+masterfully detailing everything required to design and deploy
+generative AI applications in production.
+—Luke Metz, cocreator of ChatGPT, former research
+manager at OpenAI
+Every AI engineer building real-world applications should read this
+book. It’s a vital guide to end-to-end AI system design, from model
+development and evaluation to large-scale deployment and operation.
+—Andrei Lopatenko, Director Search and AI, Neuron7

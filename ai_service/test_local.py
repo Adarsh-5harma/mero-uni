@@ -31,7 +31,7 @@ try:
         ],
         response_format=ResourceMetadata,
     )
-    
+ 
     metadata = response.choices[0].message.parsed
     print("\n✅ SUCCESS! Validated Data:")
     print(metadata.model_dump_json(indent=2))
