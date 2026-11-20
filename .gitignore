@@ -28,5 +28,6 @@ chroma_db/
 ai_service/.venv/
 ai_service/__pycache__/
 ai_service/sample.pdf
+ai_service/extracted_text.txt
 
 
