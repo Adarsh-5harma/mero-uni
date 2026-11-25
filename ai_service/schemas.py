@@ -32,3 +32,9 @@ class ResourceMetadata(BaseModel):
     summary: str = Field(
         description="A brief 2-sentence summary of the document's contents."
     )
+
+class SearchQuery(BaseModel):
+    query: str = Field(description = "The Student's search question")
+    semester: Optional[int] = Field(default = None, description="Filter y semester")
+    
+        
