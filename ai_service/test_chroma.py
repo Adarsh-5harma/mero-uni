@@ -4,7 +4,7 @@ sys.path.append(".")
 from vector_store import ingest_pdf_to_vector_store, search_vector_store
 
 # 1. Ingest the PDF (using resource_id=99 for testing)
-ingest_pdf_to_vector_store("sample.pdf", resource_id=99)
+ingest_pdf_to_vector_store("sample.pdf", resource_id=1)
 
 # 2. Search for something inside the book!
 print("\n🔍 Searching for 'What is generative AI?'...")

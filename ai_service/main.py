@@ -1,3 +1,6 @@
+from vector_store import search_vector_store
+from schemas import SearchQuery
+
 import sys
 import os
 import shutil
@@ -74,3 +77,53 @@ async def extract_metadata(file: UploadFile = File(...)):
         # Now it's safe to delete the temp file
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
+
+@app.post("/search")
+async def search_documents(request: SearchQuery):
+    """
+    Receives a student's search query, finds the best chunks in ChromaDB, 
+    and returns them.
+    """
+    print(f"🔍 Searching for: {request.query}")
+    
+    try:
+        results = search_vector_store(request.query, n_results=3)
+        
+        # Format the response so it's easy for Django to read
+        formatted_results = []
+        for i in range(len(results['documents'][0])):
+            formatted_results.append({
+                "text": results['documents'][0][i],
+                "page": results['metadatas'][0][i]['page'],
+                "resource_id": results['metadatas'][0][i]['resource_id'],
+                "distance": results['distances'][0][i] # Lower is better
+            })
+            
+        return {"results": formatted_results}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+from pydantic import BaseModel
+
+class IngestRequest(BaseModel):
+    file_path: str
+    resource_id: int
+
+@app.post("/ingest")
+async def ingest_document(request: IngestRequest):
+    """
+    Receives a file path and resource_id, and adds it to ChromaDB.
+    """
+    print(f"📥 Received ingest request for Resource ID: {request.resource_id}")
+    
+    try:
+        # We import the function we wrote earlier
+        from vector_store import ingest_pdf_to_vector_store
+        
+        ingest_pdf_to_vector_store(request.file_path, request.resource_id)
+        return {"status": "success", "message": "Document ingested to vector store"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

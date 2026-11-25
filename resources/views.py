@@ -91,30 +91,51 @@ def download_resource(request, pk):
     else:
         raise Http404("File not found")
 
+from .services import search_ai_service
+
 def search_resources(request):
-    """Search resources"""
     query = request.GET.get('q', '')
-    resources = visible_resources()
     
     if query:
-        resources = resources.filter(
-            Q(title__icontains=query) |
-            Q(description__icontains=query) |
-            Q(subject__name__icontains=query) |
-            Q(subject__code__icontains=query) |
-            Q(resource_type__name__icontains=query)
-        ).distinct()
-    
-    # Pagination
-    paginator = Paginator(resources, 12)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
-    context = {
-        'page_obj': page_obj,
-        'query': query,
-        'total_results': resources.count(),
-    }
+        # 1. Get semantic results from FastAPI
+        ai_results = search_ai_service(query)
+        
+        # 2. Extract the resource IDs from the AI results
+        resource_ids = [res['resource_id'] for res in ai_results]
+        
+        # 3. Fetch those specific resources from the database
+        # We use 'in' to get them, but we want to keep the AI's ranking order!
+        resources = Resource.objects.filter(pk__in=resource_ids, is_active=True, status='approved')
+        
+        # Re-sort them to match the AI's ranking
+        resource_dict = {res.pk: res for res in resources}
+        ranked_resources = [resource_dict[rid] for rid in resource_ids if rid in resource_dict]
+        
+        # Pagination logic (we just wrap our ranked list in a fake page_obj for the template)
+        from django.core.paginator import Paginator
+        paginator = Paginator(ranked_resources, 10) # 10 results per page
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        context = {
+            'page_obj': page_obj,
+            'query': query,
+            'total_results': len(ranked_resources),
+        }
+    else:
+        # If no query, show all approved resources
+        resources = Resource.objects.filter(is_active=True, status='approved')
+        from django.core.paginator import Paginator
+        paginator = Paginator(resources, 10)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        context = {
+            'page_obj': page_obj,
+            'query': query,
+            'total_results': resources.count(),
+        }
+
     return render(request, 'resources/search_results.html', context)
 
 def resources_by_type(request, type_slug):
