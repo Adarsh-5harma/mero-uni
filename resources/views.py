@@ -124,7 +124,7 @@ def resources_by_type(request, type_slug):
         'question-bank': 'Question Bank',
         'lab-solutions': 'Lab Solutions',
         'assignments': 'Assignments',
-        'past-papers': 'Past papers',
+        'past-papers': 'Past Papers',
         'syllabus': 'Syllabus',
     }
     

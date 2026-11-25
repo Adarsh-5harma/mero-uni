@@ -5,12 +5,12 @@ class ResourceMetadata(BaseModel):
     model_config = ConfigDict(extra = "forbid")
 
     resource_type: Literal[
-        "Notes",
-        "Question Banks",
-        "Lab Sloutions",
-        "Assignments",
-        "Past Papers",
-        "Syllabus"
+        "notes",
+        "question-bank",
+        "lab-solutions",
+        "assignments",
+        "past-papers",
+        "syllabus"
     ] = Field(description="The type of the document.")
 
     semester: int = Field(
