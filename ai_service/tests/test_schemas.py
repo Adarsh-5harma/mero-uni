@@ -59,3 +59,14 @@ def test_extra_fields_are_forbidden():
             summary="Test.",
             difficulty="hard"  # Extra field!
         )
+
+def test_semester_can_be_null():
+    """Test that a missing semester is allowed and doesn't cause a crash."""
+    metadata = ResourceMetadata(
+        resource_type="notes",
+        semester=None,  # <-- This should now be allowed
+        subject="Math",
+        key_topics=["Algebra"],
+        summary="Test."
+    )
+    assert metadata.semester is None

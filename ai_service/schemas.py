@@ -1,21 +1,24 @@
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Literal
+from typing import List, Literal, Optional # Import Optional
 
 class ResourceMetadata(BaseModel):
-    model_config = ConfigDict(extra = "forbid")
+    model_config = ConfigDict(extra="forbid")
 
     resource_type: Literal[
-        "notes",
-        "question-bank",
-        "lab-solutions",
-        "assignments",
-        "past-papers",
+        "notes", 
+        "question-bank", 
+        "lab-solutions", 
+        "assignments", 
+        "past-papers", 
         "syllabus"
     ] = Field(description="The type of the document.")
-
-    semester: int = Field(
-        ge=1, le=8, 
-        description="Nepali university semester number, must be integer 1-8"
+    
+    # Change this line:
+    semester: Optional[int] = Field(
+        default=None,
+        ge=1, 
+        le=8,
+        description="Nepali university semester number (1-8). Return null if not explicitly mentioned in the text."
     )
     
     subject: str = Field(
