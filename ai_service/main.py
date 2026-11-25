@@ -65,6 +65,12 @@ async def extract_metadata(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
     
     finally:
-        # 6. Clean up: delete the temporary file
+        # Close the PyMuPDF document to release the Windows file lock
+        try:
+            doc.close()
+        except:
+            pass
+        
+        # Now it's safe to delete the temp file
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
